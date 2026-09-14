@@ -1,20 +1,32 @@
-import pandas as pd 
-#read_csv is the python function to read any csv file(excel file)
-data=pd.read_csv('data/dataset_job_recommendation_system.csv')
+import pandas as pd
 
-print("Shape:", data.shape) 
-#shape is used to tell the size of the file in the format (rows,columns)
-print("\nColumns:",data.columns.tolist())
- # columns tell the column names and tolist convert in to list format
-print("\nFirst 5 rows:",data.head())
-# head() returns first 5 rows of the data
+# Load merged dataset
+data = pd.read_csv('data/dataset_job_recommendation_system.csv')
 
-print("\nNull Values:",data.isnull().sum())
-# returns the values that is null and count the total rows that data is null in a column
+print("Shape:", data.shape)
+# shape tells size of file in format (rows, columns)
 
-print("\nIndustry Value count:",data['Industry'].value_counts())
-print("\nIndustry Value count:",data['Experience Level'].value_counts())
-# value_counts returns total value of one industry like software : 3456 (3456 people mention software as thier industry)
+print("\nColumns:", data.columns.tolist())
+# columns tells the column names and tolist converts to list format
 
-print("\nSalary:",data['Salary'].describe())
-#describe() provides whole statistics like mean,min,max,count,50%,std(which values are spread)
+print("\nFirst 5 rows:")
+print(data.head())
+# head() returns first 5 rows of data
+
+print("\nNull Values:")
+print(data.isnull().sum())
+# returns count of null values in each column
+
+print("\nIndustry Value Count:")
+print(data['Industry'].value_counts())
+# value_counts returns total count per industry
+
+print("\nExperience Level Value Count:")
+print(data['Experience Level'].value_counts())
+
+print("\nSalary Statistics:")
+print(data['Salary'].describe())
+# describe() provides statistics like mean, min, max, count, std
+
+print("\nUnique Job Titles:", data['Job Title'].nunique())
+print("Unique Locations:", data['Location'].nunique())
