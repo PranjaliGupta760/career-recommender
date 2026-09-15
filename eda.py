@@ -34,17 +34,6 @@ plt.tight_layout()
 plt.savefig('graphs/industry.png')
 plt.show()
 
-# ─────────────────────────────
-# Graph 3 — Salary Distribution
-# ─────────────────────────────
-
-plt.figure(figsize=(10, 5))
-sns.histplot(data['Salary'], bins=30, color='teal')
-plt.title('Salary Distribution')
-plt.xlabel('Salary (USD/year)')
-plt.tight_layout()
-plt.savefig('graphs/salary.png')
-plt.show()
 
 # ─────────────────────────────
 # Graph 4 — Top 15 Skills
@@ -79,19 +68,6 @@ plt.ylabel('Count')
 plt.xticks(rotation=30, ha='right')
 plt.tight_layout()
 plt.savefig('graphs/experience.png')
-plt.show()
-
-# ─────────────────────────────
-# Graph 6 — Avg Salary by Industry (NEW)
-# ─────────────────────────────
-
-plt.figure(figsize=(12, 6))
-avg_sal = data.groupby('Industry')['Salary'].mean().sort_values(ascending=False)
-sns.barplot(x=avg_sal.values, y=avg_sal.index, color='orange')
-plt.title('Average Salary by Industry')
-plt.xlabel('Average Salary (USD/year)')
-plt.tight_layout()
-plt.savefig('graphs/salary_by_industry.png')
 plt.show()
 
 print("All graphs saved in graphs/ folder")

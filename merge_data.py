@@ -8,20 +8,16 @@ print("Loading CSV files...")
 
 postings   = pd.read_csv('data/postings.csv',
                          usecols=['job_id','title','location',
-                                  'formatted_experience_level'])
+                                  'formatted_experience_level','description'])
 
 job_skills   = pd.read_csv('data/jobs/job_skills.csv')        # job_id, skill_abr
 skills_map   = pd.read_csv('data/mappings/skills.csv')        # skill_abr, skill_name
 job_ind      = pd.read_csv('data/jobs/job_industries.csv')    # job_id, industry_id
 ind_map      = pd.read_csv('data/mappings/industries.csv')    # industry_id, industry_name
-salaries     = pd.read_csv('data/jobs/salaries.csv',
-                           usecols=['job_id','max_salary',
-                                    'pay_period'])             # salary info
 
 print(f"  Postings:      {postings.shape[0]:,} rows")
 print(f"  Job Skills:    {job_skills.shape[0]:,} rows")
 print(f"  Job Industries:{job_ind.shape[0]:,} rows")
-print(f"  Salaries:      {salaries.shape[0]:,} rows")
 
 # ─────────────────────────────────────────
 # STEP 2 — Decode skills (abbr → name)
@@ -57,29 +53,12 @@ print(f"  Industries mapped: {ind_per_job.shape[0]:,} unique jobs")
 print(f"  Total unique industries: {ind_per_job['Industry'].nunique()}")
 
 # ─────────────────────────────────────────
-# STEP 4 — Clean Salary
-#          Use only YEARLY salaries
-# ─────────────────────────────────────────
-
-yearly_sal = salaries[salaries['pay_period'] == 'YEARLY'].copy()
-
-# One salary row per job
-salary_per_job = (yearly_sal
-                  .groupby('job_id')['max_salary']
-                  .first()
-                  .reset_index()
-                  .rename(columns={'max_salary': 'Salary'}))
-
-print(f"  Yearly salaries found: {salary_per_job.shape[0]:,} jobs")
-
-# ─────────────────────────────────────────
 # STEP 5 — Merge everything into one dataset
 # ─────────────────────────────────────────
 
 data = postings.copy()
 data = data.merge(skills_grouped, on='job_id', how='left')
 data = data.merge(ind_per_job,    on='job_id', how='left')
-data = data.merge(salary_per_job, on='job_id', how='left')
 
 # Rename columns to match original code structure
 data = data.rename(columns={
@@ -97,17 +76,27 @@ print(f"\n  Merged dataset shape: {data.shape}")
 # Drop rows missing key columns
 before = len(data)
 data = data.dropna(subset=['Industry', 'Required Skills',
-                            'Experience Level', 'Salary'])
+                            'Experience Level'])
 print(f"  Dropped {before - len(data):,} rows with missing values")
 print(f"  Remaining rows: {len(data):,}")
 
-# Keep only TOP 10 industries (422 is too many for a student project)
+# Keep only TOP 10 industries
+data = data[data['Industry'] != 'Staffing and Recruiting']
 top10 = data['Industry'].value_counts().head(10).index
 data  = data[data['Industry'].isin(top10)]
 print(f"  After keeping top 10 industries: {len(data):,} rows")
 print(f"\n  Industries kept:")
 print(data['Industry'].value_counts())
+balanced_parts = []
+for industry in data['Industry'].unique():
+    subset = data[data['Industry'] == industry]
+    sampled = subset.sample(min(len(subset), 3000), random_state=42)
+    balanced_parts.append(sampled)
 
+data = pd.concat(balanced_parts, ignore_index=True)
+
+print(f"\nAfter balancing: {len(data):,} rows")
+print(data['Industry'].value_counts())
 # ─────────────────────────────────────────
 # STEP 7 — Save merged dataset
 # ─────────────────────────────────────────

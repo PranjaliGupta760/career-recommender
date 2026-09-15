@@ -24,8 +24,6 @@ print(data['Industry'].value_counts())
 print("\nExperience Level Value Count:")
 print(data['Experience Level'].value_counts())
 
-print("\nSalary Statistics:")
-print(data['Salary'].describe())
 # describe() provides statistics like mean, min, max, count, std
 
 print("\nUnique Job Titles:", data['Job Title'].nunique())
